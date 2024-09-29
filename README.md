@@ -18,7 +18,7 @@ We developed EmitGCL, a graph contrastive learning model that integrates metasta
 
 ### Dependencies, EmitGCL has the following dependencies:
 
-<div style="margin-left: 40px;">
+<div style="margin-left: 100px;">
 
 | **Package**         | **Version**           | **Package**         | **Version**           | **Package**         | **Version**           |
 |:-------------------:|:---------------------:|:-------------------:|:---------------------:|:-------------------:|:---------------------:|
