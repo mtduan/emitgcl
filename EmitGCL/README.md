@@ -16,7 +16,7 @@
 - &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`conv.py` : Perform convolutional operations on graph data to extract valuable information.  
 - &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`EmitGCL.py` : Node dimensionality reduction and identification of early metastatic cell populations.
 - &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`loss_function.py` : Loss function required for model training. 
-- &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`utils.py` : Perform data preprocessing, initialize clusters, Subgraph selection, and more.
+- &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`utils.py` : Perform data preprocessing, initialize clusters, subgraph selection, and more.
 
 </small>
 
