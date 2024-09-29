@@ -12,11 +12,11 @@
 
 <small>
   
-- &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;__init__.py  
+- &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`__init__.py`
 - &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;conv.py : Perform convolutional operations on graph data to extract valuable information.  
-- &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;EmitGCL.py : Node dimensionality reduction as well as predicting cell type or gene-peak relationships.
-- &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;loss_function.py : Perform data preprocessing, initialize clusters, calculate performance metrics, and more. 
-- &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;utils.py : Perform data preprocessing, initialize clusters, calculate performance metrics, and more.
+- &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;EmitGCL.py : Node dimensionality reduction and identification of early metastatic cell populations.
+- &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;loss_function.py : Loss function required for model training. 
+- &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;utils.py : Perform data preprocessing, initialize clusters, Subgraph selection, and more.
 
 </small>
 
