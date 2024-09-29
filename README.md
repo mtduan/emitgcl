@@ -34,8 +34,8 @@ The installation process involves some optional and necessary steps. Here's the 
 1. **Recommended Step:** Create a new environment, you should use python 3.8.
 
     ```bash
-    conda create --name marsgt python=3.8
-    conda activate marsgt
+    conda create --name emitgcl python=3.8
+    conda activate emitgcl
     ```
 
 2. **Necessary Step:** You need to install either the CPU or GPU version of PyTorch as per your preference, We recommend using the GPU version, which has a faster running speed compared to the CPU version:
