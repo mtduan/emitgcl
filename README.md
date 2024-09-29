@@ -86,7 +86,7 @@ The installation process involves some optional and necessary steps. Here's the 
             pip install https://data.pyg.org/whl/torch-1.12.0%2Bcu116/torch_cluster-1.6.0%2Bpt112cu116-cp38-cp38-win_amd64.whl
             ```
              
-        - For MacOS system(According to the official PyTorch documentation, CUDA is not available on MacOS, please use the default package):
+        - For MacOS system: According to the official PyTorch documentation, CUDA is not available on MacOS, please use the CPU Version.
 
 3. **Necessary Step:** You can directly install MarsGT using the pip command:
 
