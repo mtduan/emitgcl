@@ -16,10 +16,10 @@ We developed EmitGCL, a graph contrastive learning model that integrates metasta
 * Hardware Architecture: x86_64
 * Operating System: GNU/Linux or Windows or MacOS
 
-### Dependencies, MarsGT has the following dependencies:
+### Dependencies, EmitGCL has the following dependencies:
 
 | Packages            | Version               |
-|---------------------|---------------------|
+|:-------------------:|:---------------------:|
 | seaborn             | 0.11.2             |
 | numpy               | 1.22.3             |
 | scipy               | 1.9.1              |
