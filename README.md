@@ -18,17 +18,13 @@ We developed EmitGCL, a graph contrastive learning model that integrates metasta
 
 ### Dependencies, EmitGCL has the following dependencies:
 
-<div style="margin-left: 100px;">
-
-| **Package**         | **Version**           | **Package**         | **Version**           | **Package**         | **Version**           |
-|:-------------------:|:---------------------:|:-------------------:|:---------------------:|:-------------------:|:---------------------:|
-| **seaborn**         | 0.11.2                | **numpy**           | 1.22.3                | **scipy**           | 1.9.1                 |
-| **tqdm**            | 4.64.0                | **torch_geometric** | 2.1.0.post1           | **pandas**          | 1.4.2                 |
-| **bioservices**     | 1.11.2                | **torch**           | 1.12.0+cu102          | **h5py**            | 3.10.0                |
-| **scanpy**          | 1.9.1                 | **anndata**         | 0.8.0                 | **torchmetrics**    | 0.9.3                 |
-| **matplotlib**      | 3.5.1                 | **scikit-learn**    | 1.1.2                 | **leidenalg**       | 0.8.10                |
-
-</div>
+> | **Package**         | **Version**           | **Package**         | **Version**           | **Package**         | **Version**           |
+> |:-------------------:|:---------------------:|:-------------------:|:---------------------:|:-------------------:|:---------------------:|
+> | **seaborn**         | 0.11.2                | **numpy**           | 1.22.3                | **scipy**           | 1.9.1                 |
+> | **tqdm**            | 4.64.0                | **torch_geometric** | 2.1.0.post1           | **pandas**          | 1.4.2                 |
+> | **bioservices**     | 1.11.2                | **torch**           | 1.12.0+cu102          | **h5py**            | 3.10.0                |
+> | **scanpy**          | 1.9.1                 | **anndata**         | 0.8.0                 | **torchmetrics**    | 0.9.3                 |
+> | **matplotlib**      | 3.5.1                 | **scikit-learn**    | 1.1.2                 | **leidenalg**       | 0.8.10                |
 
 
 ### Installation Steps
