@@ -1,44 +1,3 @@
-import os
-import argparse
-import warnings
-import random
-import anndata as ad
-import torch
-import torch.nn as nn
-import torch.nn.functional as F
-from collections import Counter
-from tqdm import tqdm
-import math
-import scanpy as sc
-from sklearn.metrics import accuracy_score
-from sklearn.metrics.cluster import normalized_mutual_info_score
-
-import numpy as np
-import torch
-import torch.cuda as cuda
-from torch.utils.data import Dataset, DataLoader
-from torch_geometric.nn import GCNConv, GATConv
-from torch_geometric.nn.conv import MessagePassing
-from torch_geometric.nn.inits import glorot, uniform
-from torch_geometric.utils import softmax as Softmax
-from torchmetrics.functional import pairwise_cosine_similarity
-import anndata as ad
-import h5py
-import scipy
-import scipy.io
-from scipy import io
-from scipy.io import mmwrite,mmread
-from scipy.sparse import csc_matrix, csr_matrix
-
-from bioservices import KEGG
-from collections import Counter
-from itertools import chain
-import multiprocessing as mp
-import matplotlib.pyplot as plt
-from pandas.plotting import table
-import seaborn as sns
-
-
 # Ignore warnings
 def ignore_warnings():
     warnings.filterwarnings("ignore")
@@ -259,24 +218,28 @@ def batch_select_whole(RNA_matrix, label, neighbor=[20], cell_size=30):
     # Get the corresponding labels based on the shuffled indices
     shuffled_labels = [label[index_mapping[i]] for i in range(len(label))]
 
-    # Process Tumor and Lymph Node samples separately
-    tumor_node_ids = [index_mapping[i] for i, l in enumerate(shuffled_labels) if l == 'Tumor']
-    lymph_node_ids = [index_mapping[i] for i, l in enumerate(shuffled_labels) if l == 'Lymph Node']
+    # Initialize dictionary to hold IDs for each sample type
+    sample_type_ids = {sample_type: [] for sample_type in ['P', 'M']}
+    
+    # Populate sample_type_ids based on shuffled labels
+    for i, l in enumerate(shuffled_labels):
+        if l in sample_type_ids:
+            sample_type_ids[l].append(index_mapping[i])
 
-    n_batch_tumor = math.ceil(len(tumor_node_ids) / cell_size)
-    n_batch_lymph_node = math.ceil(len(lymph_node_ids) / cell_size)
+    # Calculate batch numbers for each sample type
+    n_batches = {sample_type: math.ceil(len(ids) / cell_size) for sample_type, ids in sample_type_ids.items()}
 
     with mp.Pool(processes=48) as pool:
-        # Process Tumor samples with a progress bar
-        tasks_tumor = [(i, tumor_node_ids, RNA_matrix, neighbor, cell_size) for i in range(n_batch_tumor)]
-        results_tumor = list(tqdm(pool.imap_unordered(batch_process_2, tasks_tumor), total=n_batch_tumor, desc="Processing Tumor samples"))
+        results = []
 
-        # Process Lymph Node samples with a progress bar
-        tasks_lymph_node = [(i, lymph_node_ids, RNA_matrix, neighbor, cell_size) for i in range(n_batch_lymph_node)]
-        results_lymph_node = list(tqdm(pool.imap_unordered(batch_process_1, tasks_lymph_node), total=n_batch_lymph_node, desc="Processing Lymph Node samples"))
+        # Process each sample type with batch_process_1 and a progress bar
+        for sample_type, ids in sample_type_ids.items():
+            tasks = [(i, ids, RNA_matrix, neighbor, cell_size) for i in range(n_batches[sample_type])]
+            results.extend(
+                list(tqdm(pool.imap_unordered(batch_process_1, tasks), total=n_batches[sample_type], desc=f"Processing {sample_type} samples"))
+            )
 
     # Merge results
-    results = results_tumor + results_lymph_node
     indices_ss = [res[0] for res in results]
     for res in results:
         dic.update(res[1])
@@ -284,3 +247,37 @@ def batch_select_whole(RNA_matrix, label, neighbor=[20], cell_size=30):
     all_cell_indices = [index for batch in indices_ss for index in batch['cell_index']]
     # The returned node_ids are original indices
     return indices_ss, all_cell_indices, dic
+
+def get_cancer_metastasis_genes():
+    kegg = KEGG()
+
+    # Define cancer metastasis pathways
+    cancer_metastasis_pathways = {
+        'Protein processing in endoplasmic reticulum': 'hsa04141',
+        'mTOR signaling pathway': 'hsa04150',
+        'NF-kappa B signaling pathway': 'hsa04064',
+        'Autophagy': 'hsa04140',
+        'p53 signaling pathway': 'hsa04115',
+        'Apoptosis': 'hsa04210'
+    }
+
+
+    pathway_genes = {}
+
+    # Iterate over each pathway
+    for pathway_name, pathway_id in cancer_metastasis_pathways.items():
+        # Retrieve pathway information
+        pathway_info = kegg.get(pathway_id)
+        parsed_pathway = kegg.parse(pathway_info)
+
+        # Get and store the gene list
+        genes = parsed_pathway['GENE']
+        gene_symbols = []
+        for gene_id, gene_info in genes.items():
+            # Get the gene symbol
+            gene_symbol = gene_info.split(' ')[0].split(';')[0]
+            gene_symbols.append(gene_symbol)
+
+        pathway_genes[pathway_name] = gene_symbols
+
+    return pathway_genes
