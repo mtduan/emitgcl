@@ -199,7 +199,7 @@ class NodeDimensionReduction(nn.Module):
         
         
 class EmitGCL(nn.Module):
-    def __init__(self, gnn, labsm, n_hid, n_batch, device, lr, wd, pathway_genes, gene_names, sample_type, num_epochs=1):
+    def __init__(self, gnn, labsm, n_hid, n_batch, device, lr, wd, pathway_genes, pathway_directions, gene_names, sample_type, sample_list, num_epochs=1):
         super(EmitGCL, self).__init__()
         self.lr = lr
         self.wd = wd
@@ -216,8 +216,11 @@ class EmitGCL(nn.Module):
         
         # Initialize PathwayUCellLoss
         gene_name_to_index = {gene: i for i, gene in enumerate(gene_names)}
-        self.pathway_loss_fn = PathwayUCellLoss(pathway_genes, gene_name_to_index, device)  
-
+        self.pathway_loss_fn = PathwayUCellLoss(pathway_genes, gene_name_to_index, pathway_directions, device)  
+        
+        # Store the sample list for sequential sampling
+        self.sample_list = sample_list
+        
     def forward(self, indices, RNA_matrix, ini_p1, sample_type, nodes_id):
         cluster_l = list()
         cluster_kl_l = list()
@@ -278,55 +281,110 @@ class EmitGCL(nn.Module):
             all_cell_emb = torch.cat(all_cell_emb, dim=0)
             all_cell_pre = all_cell_emb.argmax(dim=1)
             
-            # Count the occurrences of each unique value in all_cell_pre
-            unique_values, counts = torch.unique(all_cell_pre, return_counts=True)
-
-            # Print the unique values and their counts
-#             print("Unique values in all_cell_pre and their counts:")
-#             for value, count in zip(unique_values, counts):
-#                 print(f"Value: {value.item()}, Count: {count.item()}")
-    
-            ucell_loss, high_metastatic_indices, low_metastatic_indices = self.pathway_loss_fn(RNA_matrix.transpose()[nodes_id,:], all_cell_pre, sample_type)
-            total_ucell_loss += ucell_loss
-            
-            for label in high_metastatic_indices:
-                label_mask = (all_cell_pre == label)
-                lymph_node_mask = (np.array(sample_type) == 'Lymph Node') & label_mask.cpu().numpy()
-                z_lymph = all_cell_emb[lymph_node_mask]
-                high_metastatic_features = all_cell_emb[label_mask][high_metastatic_indices[label]]
-                low_metastatic_features = all_cell_emb[label_mask][low_metastatic_indices[label]]
-                other_cells_mask = ~np.isin(np.arange(len(all_cell_pre)), np.concatenate([high_metastatic_indices[label], low_metastatic_indices[label]]))
-                z_other = all_cell_emb[other_cells_mask]
-                sample_size = int(len(z_other) * 1.0)
-                sampler = torch.utils.data.SubsetRandomSampler(torch.randperm(len(z_other))[:sample_size])
-                z_other_sampled = z_other[list(sampler)]
+            # Sequentially calculate ucell_loss and contrastive loss for sample pairs
+            for i in range(len(self.sample_list) - 1):
+                sample_1 = self.sample_list[i]
+                sample_2 = self.sample_list[i + 1]
                 
-                loss_d1,loss_d2,loss_d3 = losses = compute_losses(z_lymph, high_metastatic_features, low_metastatic_features, z_other_sampled)
+                # Create masks for the two samples in the current pair
+                mask_1 = (np.array(sample_type) == sample_1)
+                mask_2 = (np.array(sample_type) == sample_2)
+                
+                # Combine the two masks
+                sample_pair_mask = mask_1 | mask_2
+                
+                print("RNA_matrix shape:", RNA_matrix.shape)
+                
+                RNA_matrix_pair = RNA_matrix[:,nodes_id][:, sample_pair_mask]
+                labels_pair = all_cell_pre[sample_pair_mask]
+                sample_type_pair = np.array(sample_type)[sample_pair_mask]
+                sample_pair_emb = all_cell_emb[sample_pair_mask]
+                # Compute ucell_loss and indices for high and low scores
+                ucell_loss_tensor, high_score_indices, low_score_indices = self.pathway_loss_fn(
+                    RNA_matrix_pair.transpose(), labels_pair, sample_type_pair,sample_2
+                )
+                
+                total_ucell_loss += ucell_loss_tensor
+                
+                # Compute contrastive loss for each label in the current sample pair
+                for label in high_score_indices:
+                    label_mask = (labels_pair == label)
+#                     print("label_mask.shape:", label_mask.shape)
+#                     print("sample_type_pair.shape:", sample_type_pair.shape)
+                    reference_mask = (sample_type_pair == sample_1) & label_mask.cpu().numpy()
+#                     print("sample_pair_emb.shape:", sample_pair_emb.shape)
+#                     print("reference_mask.shape:", reference_mask.shape)
 
-                if not torch.isnan(loss_d1) and not torch.isnan(loss_d2) and not torch.isnan(loss_d3):
-                    total_contrastive_loss += loss_d1 + loss_d2 + loss_d3
-                    valid_contrastive_loss_count += 1
+                    z_reference = sample_pair_emb[reference_mask]
+                    
+                    high_score_features = sample_pair_emb[label_mask][high_score_indices[label]]
+                    low_score_features = sample_pair_emb[label_mask][low_score_indices[label]]
+                    
+#                     other_cells_mask = ~np.isin(np.arange(len(labels_pair)), np.concatenate([high_score_indices[label], low_score_indices[label]]))
+#                     z_other = sample_pair_emb[other_cells_mask]
 
+                    # Define the mask to select cells that are not of the current label and belong to sample_2
+                    other_cells_mask = (labels_pair != label) & (sample_type_pair == sample_2)
+                    # Select the embeddings for these "other" cells
+                    z_other = sample_pair_emb[other_cells_mask]
+
+                    reference_indices = np.where(reference_mask)[0]
+                    other_cells_indices = np.where(other_cells_mask)[0]
+                    overlapping_indices = np.intersect1d(reference_indices, other_cells_indices)
+                    print(f"Overlapping indices: {overlapping_indices}")
+                    
+                    # Sample other cells
+                    sample_size = int(len(z_other) * 1.0)
+                    sampler = torch.utils.data.SubsetRandomSampler(torch.randperm(len(z_other))[:sample_size])
+                    z_other_sampled = z_other[list(sampler)]
+                    
+                    # 打印 sample_type_pair[label_mask][high_score_indices[label]] 的值
+                    print(f"Label: {label}")
+                    print("Values in sample_type_pair[label_mask][high_score_indices[label]]:", sample_type_pair[label_mask][high_score_indices[label]])
+    
+                    # Compute contrastive losses
+                    loss_d1, loss_d2, loss_d3 = compute_losses(z_reference, high_score_features, low_score_features, z_other_sampled)
+                    
+                    print(f"\tLosses: loss_d1={loss_d1}, loss_d2={loss_d2}, loss_d3={loss_d3}")
+                    
+                    # 打印 z_reference, high_score_features, low_score_features, z_other_sampled 的形状和内容
+#                     print("z_reference:", z_reference)
+                    print("\tz_reference shape:", z_reference.shape)
+
+#                     print("high_score_features:", high_score_features)
+                    print("\thigh_score_features shape:", high_score_features.shape)
+
+#                     print("low_score_features:", low_score_features)
+                    print("\tlow_score_features shape:", low_score_features.shape)
+
+#                     print("z_other_sampled:", z_other_sampled)
+                    print("\tz_other_sampled shape:", z_other_sampled.shape)
+
+
+                    # Add valid losses to total
+                    if not torch.isnan(loss_d1) and not torch.isnan(loss_d2) and not torch.isnan(loss_d3):
+                        total_contrastive_loss += loss_d1 + loss_d2 + loss_d3
+                        valid_contrastive_loss_count += 1
+            
+            # Average total contrastive loss if there are valid counts
             if valid_contrastive_loss_count > 0:
                 total_contrastive_loss /= valid_contrastive_loss_count
 
-            # For total_contrastive_loss, add a coefficient of 0.3
-            weighted_contrastive_loss = total_contrastive_loss * 0.1
+            # Compute weighted losses
+            weighted_contrastive_loss = total_contrastive_loss * 0.3
             weighted_ucell_loss = total_ucell_loss * 0.3
             weighted_kl_loss = (total_loss_kl1 / self.n_batch) * 10
             weighted_cluster_loss = (total_loss_cluster / self.n_batch) * 1.0
             
-            if total_contrastive_loss > 0: 
-                total_loss = weighted_kl_loss + weighted_cluster_loss + weighted_ucell_loss + weighted_contrastive_loss
-            else:
-                total_loss = weighted_kl_loss + weighted_cluster_loss + weighted_ucell_loss
+            # Compute total loss
+            total_loss = weighted_kl_loss + weighted_cluster_loss + weighted_ucell_loss + weighted_contrastive_loss
 
             print(f'Epoch {epoch + 1}:')
             print(f'  KL Loss: {weighted_kl_loss}')
             print(f'  Cluster Loss: {weighted_cluster_loss}')
             print(f'  UCell Loss: {weighted_ucell_loss}')
             print(f'  Total Contrastive Loss: {weighted_contrastive_loss}')
-            print(f'  Total Loss: {total_loss}')  # Add printing of the total loss
+            print(f'  Total Loss: {total_loss}')
             
             self.gnn_optimizer.zero_grad()
             self.net_optimizer.zero_grad()
