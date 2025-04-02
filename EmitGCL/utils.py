@@ -212,41 +212,40 @@ def batch_select_whole(RNA_matrix, label, neighbor=[20], cell_size=30):
     # Randomly shuffle cell indices
     shuffled_indices = np.random.choice(len(label), size=len(label), replace=False)
 
-    # Create a dictionary mapping shuffled indices to original indices
+    # Create a mapping from shuffled index to original index
     index_mapping = {new_idx: original_idx for original_idx, new_idx in enumerate(shuffled_indices)}
 
-    # Get the corresponding labels based on the shuffled indices
+    # Get shuffled labels using the shuffled index mapping
     shuffled_labels = [label[index_mapping[i]] for i in range(len(label))]
 
-    # Initialize dictionary to hold IDs for each sample type
-    sample_type_ids = {sample_type: [] for sample_type in ['P', 'M']}
-    
-    # Populate sample_type_ids based on shuffled labels
-    for i, l in enumerate(shuffled_labels):
-        if l in sample_type_ids:
-            sample_type_ids[l].append(index_mapping[i])
+    # Separate samples into type P and M
+    p_node_ids = [index_mapping[i] for i, l in enumerate(shuffled_labels) if l == 'P']
+    m_node_ids = [index_mapping[i] for i, l in enumerate(shuffled_labels) if l == 'M']
 
-    # Calculate batch numbers for each sample type
-    n_batches = {sample_type: math.ceil(len(ids) / cell_size) for sample_type, ids in sample_type_ids.items()}
+    # Calculate the number of batches needed for each sample type
+    n_batch_p = math.ceil(len(p_node_ids) / cell_size)
+    n_batch_m = math.ceil(len(m_node_ids) / cell_size)
 
     with mp.Pool(processes=48) as pool:
-        results = []
+        # Process P samples using batch_process_2
+        tasks_p = [(i, p_node_ids, RNA_matrix, neighbor, cell_size) for i in range(n_batch_p)]
+        results_p = list(tqdm(pool.imap_unordered(batch_process_2, tasks_p), total=n_batch_p, desc="Processing P samples"))
 
-        # Process each sample type with batch_process_1 and a progress bar
-        for sample_type, ids in sample_type_ids.items():
-            tasks = [(i, ids, RNA_matrix, neighbor, cell_size) for i in range(n_batches[sample_type])]
-            results.extend(
-                list(tqdm(pool.imap_unordered(batch_process_1, tasks), total=n_batches[sample_type], desc=f"Processing {sample_type} samples"))
-            )
+        # Process M samples using batch_process_1
+        tasks_m = [(i, m_node_ids, RNA_matrix, neighbor, cell_size) for i in range(n_batch_m)]
+        results_m = list(tqdm(pool.imap_unordered(batch_process_1, tasks_m), total=n_batch_m, desc="Processing M samples"))
 
-    # Merge results
+    # Combine results
+    results = results_p + results_m
     indices_ss = [res[0] for res in results]
     for res in results:
         dic.update(res[1])
-    
+
     all_cell_indices = [index for batch in indices_ss for index in batch['cell_index']]
-    # The returned node_ids are original indices
+    
+    # Return the node indices in original order
     return indices_ss, all_cell_indices, dic
+
 
 def get_cancer_metastasis_genes():
     kegg = KEGG()
