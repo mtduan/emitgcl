@@ -16,6 +16,10 @@ We developed EmitGCL, a graph contrastive learning model that integrates metasta
 * Hardware Architecture: x86_64
 * Operating System: GNU/Linux or Windows or MacOS
 
+### Approximate Runtime (example: 10,000 cells)
+* On CPU: approximately 8–10 hours
+* On GPU: approximately 2–4 hours
+
 ### Dependencies, EmitGCL has the following dependencies:
 
 >> | **Package**         | **Version**           | **Package**         | **Version**           | **Package**         | **Version**           |
