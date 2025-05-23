@@ -1,4 +1,4 @@
-<h1 align="center">EmitGCL: Early Metastatic cell Identification Tool based on Graph Contrastive Learning</h1>
+<h1 align="center">Deep-learning-enabled multi-omics analyses for prediction of future metastasis in cancer</h1>
 
 ## Description
 
