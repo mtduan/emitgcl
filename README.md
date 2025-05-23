@@ -5,7 +5,7 @@
 We developed EmitGCL, a graph contrastive learning model that integrates metastatic knowledge to detect subtle differences in cell groups at primary and metastatic sites. 
 
 <p align="center">
-  <img src="./images/WorkFlow.png" alt="EmitGCL Flowchart" width="900">
+  <img src="./images/workflow.png" alt="EmitGCL Flowchart" width="900">
 </p>
 
 ## Installation
