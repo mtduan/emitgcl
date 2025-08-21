@@ -1,3 +1,5 @@
+from bioservices import KEGG
+
 # Ignore warnings
 def ignore_warnings():
     warnings.filterwarnings("ignore")
@@ -44,8 +46,6 @@ def ensure_dir(file_path):
     if not os.path.exists(file_path):
         os.makedirs(file_path)
 
-
-from bioservices import KEGG
 
 def get_cancer_metastasis_genes():
     kegg = KEGG()
