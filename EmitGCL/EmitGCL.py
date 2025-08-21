@@ -338,7 +338,6 @@ class EmitGCL(nn.Module):
                     sampler = torch.utils.data.SubsetRandomSampler(torch.randperm(len(z_other))[:sample_size])
                     z_other_sampled = z_other[list(sampler)]
                     
-                    # 打印 sample_type_pair[label_mask][high_score_indices[label]] 的值
                     print(f"Label: {label}")
                     print("Values in sample_type_pair[label_mask][high_score_indices[label]]:", sample_type_pair[label_mask][high_score_indices[label]])
     
@@ -347,7 +346,6 @@ class EmitGCL(nn.Module):
                     
                     print(f"\tLosses: loss_d1={loss_d1}, loss_d2={loss_d2}, loss_d3={loss_d3}")
                     
-                    # 打印 z_reference, high_score_features, low_score_features, z_other_sampled 的形状和内容
 #                     print("z_reference:", z_reference)
                     print("\tz_reference shape:", z_reference.shape)
 
