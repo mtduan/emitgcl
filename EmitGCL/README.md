@@ -4,19 +4,53 @@
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Welcome to the EmitGCL project. This repository contains all the source code for EmitGCL, a graph contrastive learning model designed to detect early metastatic cell groups by integrating knowledge from primary and metastatic sites. EmitGCL excels in identifying subtle cellular differences, with high sensitivity and low false positive rates, especially in rare and early-stage metastatic cells, offering crucial insights for cancer prognosis and treatment.
 
-## Source Code
+---
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The source code located in this repository is organized into various files, each serving a specific purpose in the overall functioning of the EmitGCL project.Here is an overview of the main files and their content:
+## Source Code Overview
 
-### EmitGCL Code Structure
+The source code is organized into several files, each handling a key part of the model pipeline:
 
-<small>
-  
-- &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`__init__.py`
-- &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`conv.py` : Perform convolutional operations on graph data to extract valuable information.  
-- &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`EmitGCL.py` : Node dimensionality reduction and identification of early metastatic cell populations.
-- &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`loss_function.py` : Loss function required for model training. 
-- &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`utils.py` : Perform data preprocessing, initialize clusters, subgraph selection, and more.
+### 1. `__init__.py`
+Marks this directory as a Python package and initializes the module environment.
 
-</small>
+---
+
+### 2. `conv.py`
+- **Purpose**:  
+  Defines graph convolutional layers and attention mechanisms for information propagation on cell graphs.  
+- **Key Features**:  
+  - Supports multiple convolution types, including attention-based variants.  
+  - Provides utilities for node feature aggregation and multi-head attention.  
+
+---
+
+### 3. `EmitGCL.py`
+- **Purpose**:  
+  Core implementation of the **EmitGCL** model.  
+- **Key Features**:  
+  - Graph construction and node embedding learning.  
+  - Contrastive learning framework for identifying early metastatic cells.  
+  - Multi-layer graph convolution integration for high-dimensional data.  
+
+---
+
+### 4. `loss_function.py`
+- **Purpose**:  
+  Implements all loss functions used in training.  
+- **Key Features**:  
+  - **Contrastive Loss** for positive/negative sample separation.  
+  - **PathwayUCell Loss** leveraging pathway-level gene information.  
+  - **Label Smoothing** to mitigate class imbalance and overfitting.  
+
+---
+
+### 5. `utils.py`
+- **Purpose**:  
+  Provides auxiliary functions for data preprocessing and analysis.  
+- **Key Features**:  
+  - KEGG pathway gene extraction for metastasis-related signals.  
+  - Subgraph sampling and clustering initialization.  
+  - Data normalization and transformation utilities.  
+
+---
 
