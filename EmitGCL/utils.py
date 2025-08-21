@@ -245,38 +245,3 @@ def batch_select_whole(RNA_matrix, label, neighbor=[20], cell_size=30):
     
     # Return the node indices in original order
     return indices_ss, all_cell_indices, dic
-
-
-def get_cancer_metastasis_genes():
-    kegg = KEGG()
-
-    # Define cancer metastasis pathways
-    cancer_metastasis_pathways = {
-        'Protein processing in endoplasmic reticulum': 'hsa04141',
-        'mTOR signaling pathway': 'hsa04150',
-        'NF-kappa B signaling pathway': 'hsa04064',
-        'Autophagy': 'hsa04140',
-        'p53 signaling pathway': 'hsa04115',
-        'Apoptosis': 'hsa04210'
-    }
-
-
-    pathway_genes = {}
-
-    # Iterate over each pathway
-    for pathway_name, pathway_id in cancer_metastasis_pathways.items():
-        # Retrieve pathway information
-        pathway_info = kegg.get(pathway_id)
-        parsed_pathway = kegg.parse(pathway_info)
-
-        # Get and store the gene list
-        genes = parsed_pathway['GENE']
-        gene_symbols = []
-        for gene_id, gene_info in genes.items():
-            # Get the gene symbol
-            gene_symbol = gene_info.split(' ')[0].split(';')[0]
-            gene_symbols.append(gene_symbol)
-
-        pathway_genes[pathway_name] = gene_symbols
-
-    return pathway_genes
