@@ -69,7 +69,7 @@ The installation process involves some optional and necessary steps. Here's the 
              
         - For MacOS system: According to the official PyTorch documentation, CUDA is not available on MacOS, please use the CPU Version.
 
-3. **Necessary Step:** You can directly install MarsGT using the pip command:
+3. **Necessary Step:** You can directly install EmitGCL using the pip command:
 
     ```bash
     pip install --upgrade EmitGCL
