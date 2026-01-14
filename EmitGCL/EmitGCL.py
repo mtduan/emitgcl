@@ -6,8 +6,8 @@ import torch.optim as optim
 import numpy as np
 from tqdm import tqdm
 from torch.utils.data import SubsetRandomSampler
-from loss_function import *
-from conv import *
+from .loss_function import *
+from .conv import *
 from scipy.sparse import csc_matrix, csr_matrix
 from scipy.io import mmwrite,mmread
 
