@@ -84,3 +84,16 @@ The installation process involves some optional and necessary steps. Here's the 
     ```bash
     pip install --upgrade EmitGCL
     ```
+### Code Contributor
+- **Maoteng Duan** - Lead Developer and Project Maintainer
+### Citation
+If you use this work in your research, please cite the following publication:
+
+@article{wang2025deep,
+    author = {Wang, X. and Duan, M. and Su, P. L. and Li, J. and Krull, J. and Jin, J. and Ma, Q.},
+    title = {Deep-learning-enabled multi-omics analyses for prediction of future metastasis in cancer},
+    journal = {bioRxiv},
+    year = {2025},
+    doi = {10.1101/2025.01.01.123456},  # Replace with actual DOI
+}
+
