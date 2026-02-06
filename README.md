@@ -84,10 +84,10 @@ The installation process involves some optional and necessary steps. Here's the 
     ```bash
     pip install --upgrade EmitGCL
     ```
-### Code Contributor
+## Code Contributor
 Maoteng Duan carried out benchmark experiments and wrapped the code.
   
-### Citation
+## Citation
 If you use this work in your research, please cite the following publication:
  
 ```bibtex
