@@ -22,23 +22,23 @@ We developed EmitGCL, a graph contrastive learning model that integrates metasta
 
 ### Dependencies, EmitGCL has the following dependencies:
 
->> | **Package**         | **Version**           |
->> |:-------------------:|:---------------------:|
->> | **seaborn**         | 0.11.2                |
->> | **numpy**           | 1.22.3                |
->> | **scipy**           | 1.9.1                 |
->> | **tqdm**            | 4.64.0                |
->> | **torch_geometric** | 2.1.0.post1           |
->> | **pandas**          | 1.4.2                 |
->> | **bioservices**     | 1.11.2                |
->> | **torch**           | 1.12.0+cu102          |
->> | **h5py**            | 3.10.0                |
->> | **scanpy**          | 1.9.1                 |
->> | **anndata**         | 0.8.0                 |
->> | **torchmetrics**    | 0.9.3                 |
->> | **matplotlib**      | 3.5.1                 |
->> | **scikit-learn**    | 1.1.2                 |
->> | **leidenalg**       | 0.8.10                |
+| **Package**         | **Version**           |
+|:-------------------:|:---------------------:|
+| **seaborn**         | 0.11.2                |
+| **numpy**           | 1.22.3                |
+| **scipy**           | 1.9.1                 |
+| **tqdm**            | 4.64.0                |
+| **torch_geometric** | 2.1.0.post1           |
+| **pandas**          | 1.4.2                 |
+| **bioservices**     | 1.11.2                |
+| **torch**           | 1.12.0+cu102          |
+| **h5py**            | 3.10.0                |
+| **scanpy**          | 1.9.1                 |
+| **anndata**         | 0.8.0                 |
+| **torchmetrics**    | 0.9.3                 |
+| **matplotlib**      | 3.5.1                 |
+| **scikit-learn**    | 1.1.2                 |
+| **leidenalg**       | 0.8.10                |
 
 
 ### Installation Steps
@@ -88,15 +88,15 @@ The installation process involves some optional and necessary steps. Here's the 
 - **Maoteng Duan** - Lead Developer and Project Maintainer
   
 ### Citation
-> If you use this work in your research, please cite the following publication:
-> 
-> ```bibtex
-> @article{wang2025deep,
->     author = {Wang, X. and Duan, M. and Su, P. L. and Li, J. and Krull, J. and Jin, J. and Ma, Q.},
->     title = {Deep-learning-enabled multi-omics analyses for prediction of future metastasis in cancer},
->     journal = {bioRxiv},
->     year = {2025},
->     doi = {10.1101/2025.05.16.654579}, 
-> }
-> ```
+If you use this work in your research, please cite the following publication:
+ 
+```bibtex
+@article{wang2025deep,
+     author = {Wang, X. and Duan, M. and Su, P. L. and Li, J. and Krull, J. and Jin, J. and Ma, Q.},
+     title = {Deep-learning-enabled multi-omics analyses for prediction of future metastasis in cancer},
+     journal = {bioRxiv},
+     year = {2025},
+     doi = {10.1101/2025.05.16.654579}, 
+}
+```
 
