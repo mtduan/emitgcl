@@ -357,11 +357,11 @@ def batch_select_whole(RNA_matrix, label, neighbor=[20], cell_size=30):
     with mp.Pool(processes=48) as pool:
         # Process P samples using batch_process_2
         tasks_p = [(i, p_node_ids, RNA_matrix, neighbor, cell_size) for i in range(n_batch_p)]
-        results_p = list(tqdm(pool.imap_unordered(batch_process_2, tasks_p), total=n_batch_p, desc="Processing P samples"))
+        results_p = list(tqdm(pool.imap(batch_process_2, tasks_p), total=n_batch_p, desc="Processing P samples"))
 
         # Process M samples using batch_process_1
         tasks_m = [(i, m_node_ids, RNA_matrix, neighbor, cell_size) for i in range(n_batch_m)]
-        results_m = list(tqdm(pool.imap_unordered(batch_process_1, tasks_m), total=n_batch_m, desc="Processing M samples"))
+        results_m = list(tqdm(pool.imap(batch_process_1, tasks_m), total=n_batch_m, desc="Processing M samples"))
 
     # Combine results
     results = results_p + results_m
